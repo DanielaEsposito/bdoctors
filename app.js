@@ -22,7 +22,7 @@ app.use(cors({
 //ROUTERS
 
 const Router = require("./routes/routes");
-app.use("/movies", Router);
+app.use("/", Router);
 
 // ERROR HENDLER
 
