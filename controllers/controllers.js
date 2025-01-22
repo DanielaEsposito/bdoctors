@@ -118,6 +118,27 @@ function storeDoctor(req, res) {
     });
   }
 
+  if (name.length < 3) {
+    return res.status(400).json({
+      status: "ko",
+      message: "Il nome deve contenere almeno 3 lettere",
+    });
+  }
+
+  if (surname.length < 3) {
+    return res.status(400).json({
+      status: "ko",
+      message: "Il cognome deve contenere almeno 3 lettere",
+    });
+  }
+
+  if (address.length < 5) {
+    return res.status(400).json({
+      status: "ko",
+      message: "L'indirizzo deve contenere almeno 5 caratteri",
+    });
+  }
+
   const sql = `
         INSERT INTO doctors (name, surname, specialty_id, email, phone_number, address, description, city, province)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
