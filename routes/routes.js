@@ -13,4 +13,7 @@ router.get("/:id", Controller.show);
 //Create
 router.post("/", Controller.storeDoctor);
 
+//Create (review)
+router.post("/:id/review", Controller.storeReview);
+
 module.exports = router;
