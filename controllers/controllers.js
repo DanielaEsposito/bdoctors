@@ -1,4 +1,5 @@
 const connection=require("../db/connectionDb");
+//mannaggia
 //index
 function index (req,res){
     const sql= 'SELECT * FROM doctors'
