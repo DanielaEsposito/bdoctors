@@ -23,7 +23,7 @@ function show(req, res) {
   connection.query(sqlDoctors, [id], (err, doctorsResults) => {
     if (err) {
       console.log(err);
-      return res.tatus(500).json({
+      return res.status(500).json({
         error: "Database query failed",
       });
     }
@@ -193,4 +193,62 @@ function storeDoctor(req, res) {
   });
 }
 
-module.exports = { index, show, storeDoctor };
+function storeReview(req, res) {
+  const { doctor_id, username, email, rating, review_text } = req.body;
+
+  if (!doctor_id || !username || !email || !rating || !review_text) {
+    return res.status(400).json({
+      status: "ko",
+      message:
+        "Manca uno dei campi obbligatori: doctor_id, rating, review_text, username o email",
+    });
+  }
+
+  if (rating < 1 || rating > 5) {
+    return res.status(400).json({
+      status: "ko",
+      message: "Il punteggio deve essere un valore compreso tra 1 e 5",
+    });
+  }
+
+  if (review_text.length < 10) {
+    return res.status(400).json({
+      status: "ko",
+      message: "Il testo della recensione deve contenere almeno 10 caratteri",
+    });
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({
+      status: "ko",
+      message: "L'indirizzo email non è valido",
+    });
+  }
+
+  const sql = `
+    INSERT INTO reviews (doctor_id, username, email, rating, review_text)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+
+  connection.query(
+    sql,
+    [doctor_id, username, email, rating, review_text],
+    (err, results) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({
+          status: "ko",
+          message: "Errore nella query",
+        });
+      }
+
+      res.status(201).json({
+        status: "ok",
+        message: "Recensione registrata con successo!",
+      });
+    }
+  );
+}
+
+module.exports = { index, show, storeDoctor, storeReview };
