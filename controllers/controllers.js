@@ -199,6 +199,12 @@ function storeDoctor(req, res) {
     );
   });
 }
+
+const generatePathIgm = (imgName)=>{
+    const {APP_HOST, APP_PORT}=process.env;
+    return `${APP_HOST}:${APP_PORT}/img/${imgName}`
+
+};
 //modify
 function modify(req, res) {}
 //update
