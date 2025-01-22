@@ -65,7 +65,7 @@ function show (req,res){
                 status: "ok",
                 doctor: {
                     ...doctor,
-                    ...reviews,
+                    reviews,
                     specialty:specialtyResults
                 }
             });
