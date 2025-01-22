@@ -1,5 +1,5 @@
 const connection = require("../db/connectionDb");
-//mannaggia
+
 //index
 function index(req, res) {
   const sql = "SELECT * FROM doctors";
@@ -72,13 +72,6 @@ function show(req, res) {
     });
   });
 }
-// res.json({
-//     status: "ok",
-//     doctor: {
-//         ...doctor,
-//         reviews:reviewResults
-//     }
-// });
 
 //create
 function storeDoctor(req, res) {
@@ -200,15 +193,4 @@ function storeDoctor(req, res) {
   });
 }
 
-const generatePathIgm = (imgName)=>{
-    const {APP_HOST, APP_PORT}=process.env;
-    return `${APP_HOST}:${APP_PORT}/img/${imgName}`
-
-};
-//modify
-function modify(req, res) {}
-//update
-function update(req, res) {}
-//destroy
-function destroy(req, res) {}
-module.exports = { index, show, storeDoctor, modify, update, destroy };
+module.exports = { index, show, storeDoctor };
