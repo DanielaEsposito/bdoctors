@@ -32,7 +32,7 @@ function showFilteredDoctors(req, res){
       return res.tatus(500).json({
       error: "Database query failed"})  ;     
    }
-   if(doctorsResults.lenght === 0){
+   if(specialtyResutl.lenght === 0){
       return res.status(404).json({error: "doctor not found"});
    }
    res.json({
