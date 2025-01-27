@@ -9,6 +9,8 @@ router.get("/", Controller.index);
 
 // Show
 router.get("/:id", Controller.show);
+// Show
+router.get("/:id/specialties", Controller.showFilteredDoctors);
 
 //Create
 router.post("/", Controller.storeDoctor);

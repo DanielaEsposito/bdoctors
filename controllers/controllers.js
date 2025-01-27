@@ -72,7 +72,31 @@ function show(req, res) {
     });
   });
 }
-
+//Show filtered doctors
+function showFilteredDoctors(req, res){
+  const id = parseInt(req.params.id)
+  const sqlFilteredDoctor =
+  `SELECT doctors.*
+  FROM doctors
+  INNER JOIN specialties
+  ON  doctors.specialty_id = specialties.id
+  WHERE specialties.id = ? `
+  connection.query(sqlFilteredDoctor,[id], (err,specialtyResutl)=>{
+    if(err){
+      console.log(err);
+      return res.tatus(500).json({
+      error: "Database query failed"})  ;     
+   }
+   if(specialtyResutl.lenght === 0){
+      return res.status(404).json({error: "doctor not found"});
+   }
+   res.json({
+    status: "ok",
+    specialty:specialtyResutl
+});
+  })
+  
+}
 //create
 function storeDoctor(req, res) {
   const {
@@ -251,4 +275,4 @@ function storeReview(req, res) {
   );
 }
 
-module.exports = { index, show, storeDoctor, storeReview };
+module.exports = { index, show, showFilteredDoctors, storeDoctor, storeReview };
