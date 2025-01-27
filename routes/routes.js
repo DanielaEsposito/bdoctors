@@ -7,6 +7,7 @@ const Controller = require("../controllers/controllers")
 router.get('/',Controller.index);
 // Show
 router.get ("/:id", Controller.show);
+router.get ("/:id", Controller.showFilteredDoctors);
 //Create
 router.post ("/", Controller.create);
 //Update

@@ -18,6 +18,31 @@ function index (req,res){
 
 };
 //show
+function showFilteredDoctors(req, res){
+  const id = parseInt(req.params.id)
+  const sqlFilteredDoctor =
+  `SELECT doctors.*
+  FROM doctors
+  INNER JOIN specialties
+  ON  doctors.specialty_id = specialties.id
+  WHERE specialties.id = ? `
+  connection.query(sqlFilteredDoctor,[id], (err,specialtyResutl)=>{
+    if(err){
+      console.log(err);
+      return res.tatus(500).json({
+      error: "Database query failed"})  ;     
+   }
+   if(doctorsResults.lenght === 0){
+      return res.status(404).json({error: "doctor not found"});
+   }
+   res.json({
+    status: "ok",
+    specialty:specialtyResutl
+});
+  })
+  
+}
+//show
 function show (req,res){
     const id = parseInt(req.params.id);
     const sqlDoctors ="SELECT * FROM `doctors` WHERE `id` = ? ";
@@ -105,4 +130,4 @@ function update (req,res){
 function destroy (req,res){
 
 };
-module.exports ={index, show, create, modify, update, destroy};
+module.exports ={index, show, showFilteredDoctors, create, modify, update, destroy};
