@@ -1,8 +1,24 @@
 const connection = require("../db/connectionDb");
 
 //index
+
 function index(req, res) {
   const sql = "SELECT * FROM doctors";
+  connection.query(sql, (err, results) => {
+    if (err)
+      return res.status(500).json({
+        error: "Database query failed",
+      });
+
+    res.json({
+      status: "ok",
+      results,
+    });
+    console.log(res);
+  });
+}
+function indexSpecialties(req, res) {
+  const sql = "SELECT * FROM specialties";
   connection.query(sql, (err, results) => {
     if (err)
       return res.status(500).json({
@@ -275,4 +291,4 @@ function storeReview(req, res) {
   );
 }
 
-module.exports = { index, show, showFilteredDoctors, storeDoctor, storeReview };
+module.exports = { index ,indexSpecialties, show, showFilteredDoctors, storeDoctor, storeReview };

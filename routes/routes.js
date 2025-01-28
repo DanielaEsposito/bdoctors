@@ -6,6 +6,8 @@ const Controller = require("../controllers/controllers");
 
 // index
 router.get("/", Controller.index);
+//index specialties
+router.get("/specialties", Controller.index);
 
 // Show
 router.get("/:id", Controller.show);
