@@ -9,10 +9,15 @@ function index(req, res) {
       return res.status(500).json({
         error: "Database query failed",
       });
-
+      
+      const resultsDoctor = results.map(doctor => ({
+        ...doctor,
+        image: generatePathIgm(doctor.image)
+    }))
+      
     res.json({
       status: "ok",
-      results,
+      resultsDoctor,
     });
     console.log(res);
   });
@@ -81,6 +86,7 @@ function show(req, res) {
           status: "ok",
           doctor: {
             ...doctor,
+            image: generatePathIgm(doctor.image),
             reviews,
             specialty: specialtyResults,
           },
@@ -291,6 +297,12 @@ function storeReview(req, res) {
     }
   );
 }
+
+const generatePathIgm = (imgName)=>{
+  const {APP_HOST, APP_PORT}=process.env;
+  return `${APP_HOST}:${APP_PORT}/img/${imgName}`
+
+};
 
 
 
