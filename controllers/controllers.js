@@ -17,6 +17,7 @@ function index(req, res) {
     console.log(res);
   });
 }
+//index specialties
 function indexSpecialties(req, res) {
   const sql = "SELECT * FROM specialties";
   connection.query(sql, (err, results) => {
@@ -100,7 +101,7 @@ function showFilteredDoctors(req, res){
   connection.query(sqlFilteredDoctor,[id], (err,specialtyResutl)=>{
     if(err){
       console.log(err);
-      return res.tatus(500).json({
+      return res.status(500).json({
       error: "Database query failed"})  ;     
    }
    if(specialtyResutl.lenght === 0){
@@ -290,5 +291,7 @@ function storeReview(req, res) {
     }
   );
 }
+
+
 
 module.exports = { index ,indexSpecialties, show, showFilteredDoctors, storeDoctor, storeReview };
