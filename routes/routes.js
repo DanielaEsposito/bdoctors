@@ -8,6 +8,8 @@ const Controller = require("../controllers/controllers");
 router.get("/", Controller.index);
 //index specialties
 router.get("/specialties", Controller.indexSpecialties);
+//index reviews
+router.get("/reviews", Controller.indexSpecialties);
 
 // Show
 router.get("/:id", Controller.show);

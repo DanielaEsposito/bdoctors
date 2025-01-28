@@ -24,6 +24,26 @@ function index(req, res) {
     console.log(res);
   });
 }
+//index reviews
+function indexReviews(req, res) {
+  const sql = "SELECT * FROM reviews";
+  connection.query(sql, (err, results) => {
+    if (err)
+      return res.status(500).json({
+        error: "Database query failed",
+      });
+      
+      
+    
+     
+      
+    res.json({
+      status: "ok",
+      results,
+    });
+    console.log(res);
+  });
+}
 //index specialties
 function indexSpecialties(req, res) {
   const sql = "SELECT * FROM specialties";
@@ -315,4 +335,4 @@ console.log(generatePathIgm);
 
 
 
-module.exports = { index ,indexSpecialties, show, showFilteredDoctors, storeDoctor, storeReview };
+module.exports = { index ,indexSpecialties, indexReviews, show, showFilteredDoctors, storeDoctor, storeReview };
