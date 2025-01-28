@@ -14,6 +14,8 @@ function index(req, res) {
         ...doctor,
         image: generatePathIgm(doctor.image)
     }))
+     console.log(resultsDoctor);
+     
       
     res.json({
       status: "ok",
@@ -113,9 +115,14 @@ function showFilteredDoctors(req, res){
    if(specialtyResutl.lenght === 0){
       return res.status(404).json({error: "doctor not found"});
    }
+   
+   const resultsFileredDoctor = specialtyResutl.map(doctor => ({
+    ...doctor,
+    image: generatePathIgm(doctor.image)
+}))
    res.json({
     status: "ok",
-    specialty:specialtyResutl
+    specialty:resultsFileredDoctor
 });
   })
   
@@ -303,6 +310,8 @@ const generatePathIgm = (imgName)=>{
   return `${APP_HOST}:${APP_PORT}/img/${imgName}`
 
 };
+console.log(generatePathIgm);
+
 
 
 
