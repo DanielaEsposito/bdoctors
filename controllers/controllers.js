@@ -3,7 +3,12 @@ const connection = require("../db/connectionDb");
 //index
 
 function index(req, res) {
-  const sql = "SELECT * FROM doctors";
+  const sql = `SELECT doctors.* , specialties.specialty_name
+FROM doctors
+INNER JOIN specialties
+ON specialties.id = doctors.specialty_id
+ORDER BY doctors.id;
+  `;
   connection.query(sql, (err, results) => {
     if (err)
       return res.status(500).json({
@@ -32,6 +37,7 @@ function indexReviews(req, res) {
       return res.status(500).json({
         error: "Database query failed",
       });
+
       
     res.json({
       status: "ok",
