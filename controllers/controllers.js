@@ -169,6 +169,36 @@ function showFilteredDoctors(req, res) {
   });
 }
 
+
+function showFilteredDoctorsProvince(req, res) {
+  const id = parseInt(req.params.id);
+  const sqlFilteredDoctor = `SELECT doctors.*
+  FROM doctors
+  INNER JOIN province
+  ON  doctors.province_id = province.id
+  WHERE province.id = ? `;
+  connection.query(sqlFilteredDoctor, [id], (err, specialtyResutl) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({
+        error: "Database query failed",
+      });
+    }
+    if (specialtyResutl.lenght === 0) {
+      return res.status(404).json({ error: "doctor not found" });
+    }
+
+    const resultsFileredDoctor = specialtyResutl.map((doctor) => ({
+      ...doctor,
+      image: generatePathIgm(doctor.image),
+    }));
+    res.json({
+      status: "ok",
+      doctors: resultsFileredDoctor,
+    });
+  });
+}9
+
 //create
 function storeDoctor(req, res) {
   const {
@@ -359,6 +389,7 @@ module.exports = {
   indexReviews,
   show,
   showFilteredDoctors,
+  showFilteredDoctorsProvince,
   storeDoctor,
   storeReview,
   indexProvinces,
