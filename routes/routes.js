@@ -11,6 +11,8 @@ router.get("/specialties", Controller.indexSpecialties);
 //index reviews
 router.get("/reviews", Controller.indexReviews);
 
+router.get("/provinces", Controller.indexProvinces);
+
 // Show
 router.get("/:id", Controller.show);
 // Show

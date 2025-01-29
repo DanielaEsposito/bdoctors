@@ -14,14 +14,13 @@ ORDER BY doctors.id;
       return res.status(500).json({
         error: "Database query failed",
       });
-      
-      const resultsDoctor = results.map(doctor => ({
-        ...doctor,
-        image: generatePathIgm(doctor.image)
-    }))
-     console.log(resultsDoctor);
-     
-      
+
+    const resultsDoctor = results.map((doctor) => ({
+      ...doctor,
+      image: generatePathIgm(doctor.image),
+    }));
+    console.log(resultsDoctor);
+
     res.json({
       status: "ok",
       resultsDoctor,
@@ -29,6 +28,7 @@ ORDER BY doctors.id;
     console.log(res);
   });
 }
+
 //index reviews
 function indexReviews(req, res) {
   const sql = "SELECT * FROM reviews";
@@ -38,7 +38,6 @@ function indexReviews(req, res) {
         error: "Database query failed",
       });
 
-      
     res.json({
       status: "ok",
       results,
@@ -46,6 +45,24 @@ function indexReviews(req, res) {
     console.log(res);
   });
 }
+
+//index reviews
+function indexProvinces(req, res) {
+  const sql = "SELECT * FROM province";
+  connection.query(sql, (err, results) => {
+    if (err)
+      return res.status(500).json({
+        error: "Database query failed",
+      });
+
+    res.json({
+      status: "ok",
+      results,
+    });
+    console.log(res);
+  });
+}
+
 //index specialties
 function indexSpecialties(req, res) {
   const sql = "SELECT * FROM specialties";
@@ -62,10 +79,12 @@ function indexSpecialties(req, res) {
     console.log(res);
   });
 }
+
 //show
 function show(req, res) {
   const id = parseInt(req.params.id);
-  const sqlDoctors = "SELECT * FROM `doctors` WHERE `id` = ? ";
+  const sqlDoctors =
+    "SELECT doctors.*, province.province_name FROM `doctors` INNER JOIN `province` ON doctors.province_id = province.id WHERE doctors.`id` = ?";
   connection.query(sqlDoctors, [id], (err, doctorsResults) => {
     if (err) {
       console.log(err);
@@ -119,36 +138,37 @@ function show(req, res) {
     });
   });
 }
+
 //Show filtered doctors
-function showFilteredDoctors(req, res){
-  const id = parseInt(req.params.id)
-  const sqlFilteredDoctor =
-  `SELECT doctors.*
+function showFilteredDoctors(req, res) {
+  const id = parseInt(req.params.id);
+  const sqlFilteredDoctor = `SELECT doctors.*
   FROM doctors
   INNER JOIN specialties
   ON  doctors.specialty_id = specialties.id
-  WHERE specialties.id = ? `
-  connection.query(sqlFilteredDoctor,[id], (err,specialtyResutl)=>{
-    if(err){
+  WHERE specialties.id = ? `;
+  connection.query(sqlFilteredDoctor, [id], (err, specialtyResutl) => {
+    if (err) {
       console.log(err);
       return res.status(500).json({
-      error: "Database query failed"})  ;     
-   }
-   if(specialtyResutl.lenght === 0){
-      return res.status(404).json({error: "doctor not found"});
-   }
-   
-   const resultsFileredDoctor = specialtyResutl.map(doctor => ({
-    ...doctor,
-    image: generatePathIgm(doctor.image)
-}))
-   res.json({
-    status: "ok",
-    specialty:resultsFileredDoctor
-});
-  })
-  
+        error: "Database query failed",
+      });
+    }
+    if (specialtyResutl.lenght === 0) {
+      return res.status(404).json({ error: "doctor not found" });
+    }
+
+    const resultsFileredDoctor = specialtyResutl.map((doctor) => ({
+      ...doctor,
+      image: generatePathIgm(doctor.image),
+    }));
+    res.json({
+      status: "ok",
+      specialty: resultsFileredDoctor,
+    });
+  });
 }
+
 //create
 function storeDoctor(req, res) {
   const {
@@ -327,14 +347,19 @@ function storeReview(req, res) {
   );
 }
 
-const generatePathIgm = (imgName)=>{
-  const {APP_HOST, APP_PORT}=process.env;
-  return `${APP_HOST}:${APP_PORT}/img/${imgName}`
-
+const generatePathIgm = (imgName) => {
+  const { APP_HOST, APP_PORT } = process.env;
+  return `${APP_HOST}:${APP_PORT}/img/${imgName}`;
 };
 console.log(generatePathIgm);
 
-
-
-
-module.exports = { index ,indexSpecialties, indexReviews, show, showFilteredDoctors, storeDoctor, storeReview };
+module.exports = {
+  index,
+  indexSpecialties,
+  indexReviews,
+  show,
+  showFilteredDoctors,
+  storeDoctor,
+  storeReview,
+  indexProvinces,
+};
