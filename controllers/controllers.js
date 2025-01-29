@@ -177,18 +177,18 @@ function showFilteredDoctorsProvince(req, res) {
   INNER JOIN province
   ON  doctors.province_id = province.id
   WHERE province.id = ? `;
-  connection.query(sqlFilteredDoctor, [id], (err, specialtyResutl) => {
+  connection.query(sqlFilteredDoctor, [id], (err, provincesResutl) => {
     if (err) {
       console.log(err);
       return res.status(500).json({
         error: "Database query failed",
       });
     }
-    if (specialtyResutl.lenght === 0) {
+    if (provincesResutl.lenght === 0) {
       return res.status(404).json({ error: "doctor not found" });
     }
 
-    const resultsFileredDoctor = specialtyResutl.map((doctor) => ({
+    const resultsFileredDoctor = provincesResutl.map((doctor) => ({
       ...doctor,
       image: generatePathIgm(doctor.image),
     }));
