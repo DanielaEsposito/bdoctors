@@ -33,10 +33,6 @@ function indexReviews(req, res) {
         error: "Database query failed",
       });
       
-      
-    
-     
-      
     res.json({
       status: "ok",
       results,

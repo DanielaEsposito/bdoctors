@@ -9,7 +9,7 @@ router.get("/", Controller.index);
 //index specialties
 router.get("/specialties", Controller.indexSpecialties);
 //index reviews
-router.get("/reviews", Controller.indexSpecialties);
+router.get("/reviews", Controller.indexReviews);
 
 // Show
 router.get("/:id", Controller.show);
