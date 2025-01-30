@@ -1,5 +1,50 @@
 const connection = require("../db/connectionDb");
 
+const getDoctorsBySpecialty = (req, res) => {
+  const { specialtyId } = req.params;
+
+  connection.query(
+    "SELECT * FROM doctors WHERE specialty_id = ?",
+    [specialtyId],
+    (error, results) => {
+      if (error) {
+        return res.json({ status: "kO", error: error.message });
+      }
+
+      // Aggiungi il path dell'immagine a ciascun medico
+      const doctorsWithImagePath = results.map((doctor) => ({
+        ...doctor,
+        image: generatePathIgm(doctor.image), // `doctor.image` è il nome del file immagine nel database
+      }));
+
+      res.json({ status: "ok", doctors: doctorsWithImagePath });
+    }
+  );
+};
+
+// Definisci le funzioni senza `exports`
+const getDoctorsByProvince = (req, res) => {
+  const { provinceId } = req.params;
+
+  connection.query(
+    "SELECT * FROM doctors WHERE province_id = ?",
+    [provinceId],
+    (error, results) => {
+      if (error) {
+        return res.json({ status: "kO", error: error.message });
+      }
+
+      // Aggiungi il path dell'immagine a ciascun medico
+      const doctorsWithImagePath = results.map((doctor) => ({
+        ...doctor,
+        image: generatePathIgm(doctor.image), // `doctor.image` è il nome del file immagine nel database
+      }));
+
+      res.json({ status: "ok", doctors: doctorsWithImagePath });
+    }
+  );
+};
+
 //index
 
 function index(req, res) {
@@ -183,36 +228,38 @@ function showFilteredDoctorsProvince(req, res) {
     AND province.id = ?
   `;
 
-  connection.query(sqlFilteredDoctor, [specialtyId, provinceId], (err, provincesResult) => {
-    if (err) {
-      console.log("Database query error:", err);
-      return res.status(500).json({
-        error: "Database query failed",
+  connection.query(
+    sqlFilteredDoctor,
+    [specialtyId, provinceId],
+    (err, provincesResult) => {
+      if (err) {
+        console.log("Database query error:", err);
+        return res.status(500).json({
+          error: "Database query failed",
+        });
+      }
+
+      if (provincesResult.length === 0) {
+        return res.status(404).json({ error: "No doctors found" });
+      }
+
+      // Mappa i risultati ottenuti dal database in un formato che il frontend si aspetta
+      const resultsFilteredDoctor = provincesResult.map((doctor) => ({
+        id: doctor.id,
+        name: doctor.name,
+        surname: doctor.surname,
+        city: doctor.city,
+        image: generatePathIgm(doctor.image),
+      }));
+
+      // Risposta JSON con lo status e i dati dei medici
+      res.json({
+        status: "ok",
+        doctors: resultsFilteredDoctor,
       });
     }
-
-    if (provincesResult.length === 0) {
-      return res.status(404).json({ error: "No doctors found" });
-    }
-
-    // Mappa i risultati ottenuti dal database in un formato che il frontend si aspetta
-    const resultsFilteredDoctor = provincesResult.map((doctor) => ({
-      id: doctor.id,
-      name: doctor.name,
-      surname: doctor.surname,
-      city: doctor.city,
-      image: generatePathIgm(doctor.image), 
-    }));
-
-    // Risposta JSON con lo status e i dati dei medici
-    res.json({
-      status: "ok",
-      doctors: resultsFilteredDoctor,
-    });
-  });
+  );
 }
-
-
 
 //create
 function storeDoctor(req, res) {
@@ -416,4 +463,6 @@ module.exports = {
   storeDoctor,
   storeReview,
   indexProvinces,
+  getDoctorsByProvince,
+  getDoctorsBySpecialty,
 };
