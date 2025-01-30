@@ -169,7 +169,6 @@ function showFilteredDoctors(req, res) {
   });
 }
 
-
 function showFilteredDoctorsProvince(req, res) {
   const id = parseInt(req.params.id);
   const sqlFilteredDoctor = `SELECT doctors.*
@@ -197,7 +196,8 @@ function showFilteredDoctorsProvince(req, res) {
       doctors: resultsFileredDoctor,
     });
   });
-}9
+}
+9;
 
 //create
 function storeDoctor(req, res) {
@@ -322,6 +322,8 @@ function storeDoctor(req, res) {
 function storeReview(req, res) {
   const { doctor_id, username, email, rating, review_text } = req.body;
 
+  console.log("Dati ricevuti:", req.body);
+
   if (!doctor_id || !username || !email || !rating || !review_text) {
     return res.status(400).json({
       status: "ko",
@@ -337,12 +339,16 @@ function storeReview(req, res) {
     });
   }
 
+  console.log("Valore rating:", rating);
+
   if (review_text.length < 10) {
     return res.status(400).json({
       status: "ko",
       message: "Il testo della recensione deve contenere almeno 10 caratteri",
     });
   }
+
+  console.log("Testo della recensione:", review_text);
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
@@ -351,6 +357,8 @@ function storeReview(req, res) {
       message: "L'indirizzo email non è valido",
     });
   }
+
+  console.log("Email ricevuta:", email);
 
   const sql = `
     INSERT INTO reviews (doctor_id, username, email, rating, review_text)
@@ -362,7 +370,7 @@ function storeReview(req, res) {
     [doctor_id, username, email, rating, review_text],
     (err, results) => {
       if (err) {
-        console.error(err);
+        console.error("Errore nella query:", err);
         return res.status(500).json({
           status: "ko",
           message: "Errore nella query",
