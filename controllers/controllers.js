@@ -170,34 +170,49 @@ function showFilteredDoctors(req, res) {
 }
 
 function showFilteredDoctorsProvince(req, res) {
-  const id = parseInt(req.params.id);
-  const sqlFilteredDoctor = `SELECT doctors.*
-  FROM doctors
-  INNER JOIN province
-  ON  doctors.province_id = province.id
-  WHERE province.id = ? `;
-  connection.query(sqlFilteredDoctor, [id], (err, provincesResutl) => {
+  const specialtyId = parseInt(req.params.specialtyId);
+  const provinceId = parseInt(req.params.provinceId);
+
+  // Costruisci la query SQL per ottenere i medici filtrati per specialità e provincia
+  const sqlFilteredDoctor = `
+    SELECT doctors.id, doctors.name, doctors.surname, doctors.city, doctors.image
+    FROM doctors
+    INNER JOIN specialties ON doctors.specialty_id = specialties.id
+    INNER JOIN province ON doctors.province_id = province.id
+    WHERE specialties.id = ?
+    AND province.id = ?
+  `;
+
+  connection.query(sqlFilteredDoctor, [specialtyId, provinceId], (err, provincesResult) => {
     if (err) {
-      console.log(err);
+      console.log("Database query error:", err);
       return res.status(500).json({
         error: "Database query failed",
       });
     }
-    if (provincesResutl.lenght === 0) {
-      return res.status(404).json({ error: "doctor not found" });
+
+    if (provincesResult.length === 0) {
+      return res.status(404).json({ error: "No doctors found" });
     }
 
-    const resultsFileredDoctor = provincesResutl.map((doctor) => ({
-      ...doctor,
-      image: generatePathIgm(doctor.image),
+    // Mappa i risultati ottenuti dal database in un formato che il frontend si aspetta
+    const resultsFilteredDoctor = provincesResult.map((doctor) => ({
+      id: doctor.id,
+      name: doctor.name,
+      surname: doctor.surname,
+      city: doctor.city,
+      image: generatePathIgm(doctor.image), 
     }));
+
+    // Risposta JSON con lo status e i dati dei medici
     res.json({
       status: "ok",
-      doctors: resultsFileredDoctor,
+      doctors: resultsFilteredDoctor,
     });
   });
 }
-9;
+
+
 
 //create
 function storeDoctor(req, res) {

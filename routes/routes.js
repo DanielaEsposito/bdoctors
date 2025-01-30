@@ -19,7 +19,8 @@ router.get("/:id", Controller.show);
 router.get("/:id/specialties", Controller.showFilteredDoctors);
 
 //show
-router.get("/:id/provinces", Controller.showFilteredDoctorsProvince);
+router.get("/specialties/:specialtyId/provinces/:provinceId", Controller.showFilteredDoctorsProvince);
+
 
 //Create
 router.post("/", Controller.storeDoctor);
