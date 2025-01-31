@@ -272,7 +272,8 @@ function storeDoctor(req, res) {
     address,
     description,
     city,
-    province,
+    province_id,
+    image,
   } = req.body;
 
   if (
@@ -346,8 +347,8 @@ function storeDoctor(req, res) {
     }
 
     const sql = `
-      INSERT INTO doctors (name, surname, specialty_id, email, phone_number, address, description, city, province)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO doctors (name, surname, specialty_id, email, phone_number, address, description, city, province_id, image)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     connection.query(
@@ -361,7 +362,8 @@ function storeDoctor(req, res) {
         address,
         description || null,
         city || null,
-        province || null,
+        province_id || null,
+        image || null,
       ],
       (err, results) => {
         if (err) {
