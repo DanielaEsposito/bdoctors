@@ -4,7 +4,19 @@ const getDoctorsBySpecialty = (req, res) => {
   const { specialtyId } = req.params;
 
   connection.query(
-    "SELECT * FROM doctors WHERE specialty_id = ?",
+    `SELECT 
+  doctors.id, 
+  doctors.name,
+  doctors.surname,
+  doctors.specialty_id, 
+  doctors.image,
+  COUNT(Reviews.id) AS reviewCount,
+  AVG(Reviews.rating) AS averageRating
+FROM Doctors
+LEFT JOIN Reviews ON Doctors.id = Reviews.doctor_id
+WHERE Doctors.specialty_id = ?
+GROUP BY Doctors.id
+ORDER BY averageRating DESC;`,
     [specialtyId],
     (error, results) => {
       if (error) {
@@ -27,7 +39,20 @@ const getDoctorsByProvince = (req, res) => {
   const { provinceId } = req.params;
 
   connection.query(
-    "SELECT * FROM doctors WHERE province_id = ?",
+    `  SELECT 
+  doctors.id, 
+  doctors.name,
+  doctors.surname,
+  doctors.specialty_id, 
+  doctors.image,
+  doctors.province_id,
+  COUNT(Reviews.id) AS reviewCount,
+  AVG(Reviews.rating) AS averageRating
+FROM Doctors
+LEFT JOIN Reviews ON Doctors.id = Reviews.doctor_id
+WHERE Doctors.province_id = ?
+GROUP BY Doctors.id
+ORDER BY averageRating DESC;`,
     [provinceId],
     (error, results) => {
       if (error) {
@@ -187,11 +212,19 @@ function show(req, res) {
 //Show filtered doctors
 function showFilteredDoctors(req, res) {
   const id = parseInt(req.params.id);
-  const sqlFilteredDoctor = `SELECT doctors.*
-  FROM doctors
-  INNER JOIN specialties
-  ON  doctors.specialty_id = specialties.id
-  WHERE specialties.id = ? `;
+  const sqlFilteredDoctor = `SELECT 
+  doctors.id, 
+  doctors.name,
+  doctors.surname,
+  doctors.specialty_id, 
+  doctors.image,
+  COUNT(Reviews.id) AS reviewCount,
+  AVG(Reviews.rating) AS averageRating
+FROM Doctors
+LEFT JOIN Reviews ON Doctors.id = Reviews.doctor_id
+WHERE Doctors.specialty_id = ?
+GROUP BY Doctors.id
+ORDER BY averageRating DESC;`;
   connection.query(sqlFilteredDoctor, [id], (err, specialtyResutl) => {
     if (err) {
       console.log(err);
@@ -218,14 +251,40 @@ function showFilteredDoctorsProvince(req, res) {
   const specialtyId = parseInt(req.params.specialtyId);
   const provinceId = parseInt(req.params.provinceId);
 
+  //   `SELECT
+  //   doctors.id,
+  //   doctors.name,
+  //   doctors.surname,
+  //   doctors.specialty_id,
+  //   doctors.image,
+  //   COUNT(Reviews.id) AS reviewCount,
+  //   AVG(Reviews.rating) AS averageRating
+  // FROM Doctors
+  // LEFT JOIN Reviews ON Doctors.id = Reviews.doctor_id
+  // WHERE Doctors.specialty_id = ?
+  // GROUP BY Doctors.id
+  // ORDER BY averageRating DESC;`;
+
   // Costruisci la query SQL per ottenere i medici filtrati per specialità e provincia
   const sqlFilteredDoctor = `
-    SELECT doctors.id, doctors.name, doctors.surname, doctors.city, doctors.image
-    FROM doctors
-    INNER JOIN specialties ON doctors.specialty_id = specialties.id
-    INNER JOIN province ON doctors.province_id = province.id
-    WHERE specialties.id = ?
-    AND province.id = ?
+   SELECT 
+    doctors.id, 
+    doctors.name, 
+    doctors.surname, 
+    doctors.city, 
+    doctors.image, 
+    doctors.province_id, 
+    doctors.specialty_id,
+    COUNT(reviews.id) AS reviewCount,
+    AVG(reviews.rating) AS averageRating
+FROM doctors
+INNER JOIN specialties ON doctors.specialty_id = specialties.id
+INNER JOIN province ON doctors.province_id = province.id
+LEFT JOIN reviews ON doctors.id = reviews.doctor_id  -- Aggiunto JOIN sulla tabella Reviews
+WHERE specialties.id = ? 
+AND province.id = ? 
+GROUP BY doctors.id, doctors.name, doctors.surname, doctors.city, doctors.image, doctors.province_id, doctors.specialty_id;
+
   `;
 
   connection.query(
@@ -250,6 +309,8 @@ function showFilteredDoctorsProvince(req, res) {
         surname: doctor.surname,
         city: doctor.city,
         image: generatePathIgm(doctor.image),
+        averageRating: doctor.averageRating,
+        reviewCount: doctor.reviewCount,
       }));
 
       // Risposta JSON con lo status e i dati dei medici

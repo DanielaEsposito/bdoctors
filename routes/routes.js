@@ -25,7 +25,10 @@ router.get(
 );
 
 router.get("/specialties/:specialtyId", Controller.getDoctorsBySpecialty);
-router.get("/provinces/:provinceId", Controller.getDoctorsByProvince);
+router.get(
+  "/specialties/provinces/:provinceId",
+  Controller.getDoctorsByProvince
+);
 
 //Create
 router.post("/", Controller.storeDoctor);
