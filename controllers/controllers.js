@@ -390,15 +390,16 @@ function storeDoctor(req, res) {
     });
   }
 
-  const checkEmailSql = "SELECT * FROM doctors WHERE email = ?";
-  connection.query(checkEmailSql, [email], (err, results) => {
+  const sqlCheckEmail = `SELECT email FROM doctors WHERE email = ?;`;
+  connection.query(sqlCheckEmail, [email], (err, results) => {
     if (err) {
-      console.error(err);
-      return res.status(500).json({
-        status: "ko",
-        message: "Database query failed",
-      });
+      console.error("Errore SQL:", err);
+      return res
+        .status(500)
+        .json({ status: "KO", message: "Errore del server" });
     }
+
+    console.log("Risultati query:", results);
 
     if (results.length > 0) {
       return res.status(400).json({
