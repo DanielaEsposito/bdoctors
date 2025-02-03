@@ -13,14 +13,19 @@ router.get("/reviews", Controller.indexReviews);
 
 router.get("/provinces", Controller.indexProvinces);
 
+// ! search
+router.get("/search", Controller.indexSearch);
+
 // Show
 router.get("/:id", Controller.show);
 // Show
 router.get("/:id/specialties", Controller.showFilteredDoctors);
 
 //show
-router.get("/specialties/:specialtyId/provinces/:provinceId", Controller.showFilteredDoctorsProvince);
-
+router.get(
+  "/specialties/:specialtyId/provinces/:provinceId",
+  Controller.showFilteredDoctorsProvince
+);
 
 //Create
 router.post("/", Controller.storeDoctor);

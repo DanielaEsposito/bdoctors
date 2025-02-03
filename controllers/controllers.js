@@ -80,6 +80,52 @@ function indexSpecialties(req, res) {
   });
 }
 
+// ! search
+
+function indexSearch(req, res) {
+  const { doctorId, specialtyId, provinceId } = req.query;
+
+  let sqlSearch = `SELECT doctors.*, 
+  province.province_name,
+  specialties.specialty_name
+  FROM doctors 
+  JOIN province ON doctors.province_id = province.id 
+  JOIN specialties ON doctors.specialty_id = specialties.id 
+  WHERE 1=1`;
+
+  if (doctorId) {
+    sqlSearch += ` AND doctors.id = ${doctorId}`;
+  }
+
+  if (specialtyId) {
+    sqlSearch += ` AND specialty_id = ${specialtyId}`;
+  }
+
+  if (provinceId) {
+    sqlSearch += ` AND province_id = ${provinceId}`;
+  }
+
+  if (!doctorId && !specialtyId && !provinceId) {
+    sqlSearch += ` LIMIT 5`;
+  }
+
+  connection.query(sqlSearch, (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: "Database query failed" });
+    }
+
+    const resultsDoctor = results.map((doctor) => ({
+      ...doctor,
+      image: generatePathIgm(doctor.image),
+    }));
+
+    res.json({
+      status: "ok",
+      resultsDoctor,
+    });
+  });
+}
+
 //show
 function show(req, res) {
   const id = parseInt(req.params.id);
@@ -183,36 +229,38 @@ function showFilteredDoctorsProvince(req, res) {
     AND province.id = ?
   `;
 
-  connection.query(sqlFilteredDoctor, [specialtyId, provinceId], (err, provincesResult) => {
-    if (err) {
-      console.log("Database query error:", err);
-      return res.status(500).json({
-        error: "Database query failed",
+  connection.query(
+    sqlFilteredDoctor,
+    [specialtyId, provinceId],
+    (err, provincesResult) => {
+      if (err) {
+        console.log("Database query error:", err);
+        return res.status(500).json({
+          error: "Database query failed",
+        });
+      }
+
+      if (provincesResult.length === 0) {
+        return res.status(404).json({ error: "No doctors found" });
+      }
+
+      // Mappa i risultati ottenuti dal database in un formato che il frontend si aspetta
+      const resultsFilteredDoctor = provincesResult.map((doctor) => ({
+        id: doctor.id,
+        name: doctor.name,
+        surname: doctor.surname,
+        city: doctor.city,
+        image: generatePathIgm(doctor.image),
+      }));
+
+      // Risposta JSON con lo status e i dati dei medici
+      res.json({
+        status: "ok",
+        doctors: resultsFilteredDoctor,
       });
     }
-
-    if (provincesResult.length === 0) {
-      return res.status(404).json({ error: "No doctors found" });
-    }
-
-    // Mappa i risultati ottenuti dal database in un formato che il frontend si aspetta
-    const resultsFilteredDoctor = provincesResult.map((doctor) => ({
-      id: doctor.id,
-      name: doctor.name,
-      surname: doctor.surname,
-      city: doctor.city,
-      image: generatePathIgm(doctor.image), 
-    }));
-
-    // Risposta JSON con lo status e i dati dei medici
-    res.json({
-      status: "ok",
-      doctors: resultsFilteredDoctor,
-    });
-  });
+  );
 }
-
-
 
 //create
 function storeDoctor(req, res) {
@@ -404,7 +452,7 @@ const generatePathIgm = (imgName) => {
   const { APP_HOST, APP_PORT } = process.env;
   return `${APP_HOST}:${APP_PORT}/img/${imgName}`;
 };
-console.log(generatePathIgm);
+// console.log(generatePathIgm);
 
 module.exports = {
   index,
@@ -416,4 +464,5 @@ module.exports = {
   storeDoctor,
   storeReview,
   indexProvinces,
+  indexSearch,
 };
